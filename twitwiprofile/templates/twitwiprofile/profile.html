@@ -1,0 +1,29 @@
+{% extends 'twitwiprofile/base.html' %}
+
+{% block main %}
+<div class="row">
+  <!-- Feed -->
+  <div class="col-9">
+    <h3>@{{ user.username }}</h3>
+
+    {% if user.twits.all %}
+      {% for djeet in user.twits.all %}
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="card-body">
+            <h5 class="card-title">@{{ twit.user.username }}</h5>
+            <p class="card-text"><b>{{ twit.created_at }}</b> - {{ twit.body }}</p>
+          </div>  
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No Twits yet!</p>
+    {% endif %}
+  </div>
+
+  <!-- Sidebar -->
+  <div class="col-3">
+    <h3>Add Twit</h3>
+  </div>
+</div>
+
+{% endblock %}

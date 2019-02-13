@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from twitwiprofile.forms import SignInForm, SignUpForm
+from twit.forms import TwitForm
 
 
 def frontpage(request):
     if request.user.is_authenticated:
         # Redirect to user's profile
-        return render(request, 'twitwiprofile/profile.html')
+        return redirect('/' + request.user.username + '/')
     else:
         if request.method == 'POST':
 
@@ -48,6 +49,23 @@ def signout(request):
 
 def profile(request, username):
     """ Fetch user details using their username, then render their profile on profile.html """
-    user = User.objects.get(username=username)
+    if request.user.is_authenticated:
+        user = User.objects.get(username=username)
 
-    return render(request, 'twitwiprofile/profile.html', {'user': user})
+        if request.method == 'POST':
+            form = TwitForm(data=request.POST)
+
+            if form.is_valid():
+                twit = form.save(commit=False)
+                twit.user = request.user
+                twit.save()
+
+                redirecturl = request.POST.get('redirect', '/')
+
+                return redirect(redirecturl)
+        else:
+            form = TwitForm()
+
+        return render(request, 'twitwiprofile/profile.html', {'form': form, 'user': user})
+    else:
+        return redirect('/')

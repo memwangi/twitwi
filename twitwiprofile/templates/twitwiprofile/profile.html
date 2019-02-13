@@ -3,26 +3,55 @@
 {% block main %}
 <div class="row">
   <!-- Feed -->
-  <div class="col-9">
+  <div class="col-6">
     <h3>@{{ user.username }}</h3>
 
     {% if user.twits.all %}
-      {% for djeet in user.twits.all %}
-        <div class="card" style="margin-bottom: 20px;">
-          <div class="card-body">
-            <h5 class="card-title">@{{ twit.user.username }}</h5>
-            <p class="card-text"><b>{{ twit.created_at }}</b> - {{ twit.body }}</p>
-          </div>  
-        </div>
-      {% endfor %}
+    {% for twit in user.twits.all %}
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="card-body">
+        <h5 class="card-title">@{{ twit.user.username }}</h5>
+        <p class="card-text"><b>{{ twit.created_at }}</b> - {{ twit.body }}</p>
+      </div>
+    </div>
+    {% endfor %}
     {% else %}
-      <p>No Twits yet!</p>
+    <p>No Twits yet!</p>
     {% endif %}
   </div>
 
   <!-- Sidebar -->
-  <div class="col-3">
+  <div class="col-6">
     <h3>Add Twit</h3>
+
+    {% if form.errors %}
+      {% for field in form %}
+        {% for error in form.errors %}
+           <div class="alert alert-danger">
+            <b>{{ error|escape }}</b>
+            </div>
+         {% endfor %}
+      {% endfor %}
+      {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+          <b>{{ error|escape }}</b>
+         </div>
+      {% endfor %}
+    {% endif %}
+
+    <form action="/{{ request.user.username }}/" method="POST">
+    {% csrf_token %}
+
+    {% for field in form %}
+      <div class="form-group">
+        {{ field }}
+      </div>
+    {% endfor %}
+
+    <input type="hidden" value="{{ request.path }}" name="redirect">
+    <input type="submit" value="Post Twit" class="btn btn-primary">
+    
+    </form>
   </div>
 </div>
 

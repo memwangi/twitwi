@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from twitwiprofile.forms import SignInForm, SignUpForm
 from twit.forms import TwitForm
 
@@ -69,3 +70,40 @@ def profile(request, username):
         return render(request, 'twitwiprofile/profile.html', {'form': form, 'user': user})
     else:
         return redirect('/')
+
+
+def follows(request, username):
+    """
+    Get the list of people followed by the current user
+    """
+    user = User.objects.get(username=username)
+    twitwiprofiles = user.twitwiprofile.follows
+
+    return render(request, 'twitwiprofile/users.html', {'title': 'Follows', 'twitwiprofiles': twitwiprofiles})
+
+
+def followers(request, username):
+    """Get a list of people who follow the current user
+    """
+    user = User.objects.get(username=username)
+    twitwiprofiles = user.twitwiprofile.followed_by
+
+    return render(request, 'twitwiprofile/users.html', {'title': 'Followers', 'twitwiprofiles': twitwiprofiles})
+
+
+@login_required
+def unfollow(request, username):
+    """Unfollow a user but still redirect to his profile"""
+    user = User.objects.get(username=username)
+    request.user.twitwiprofile.follows.remove(user.twitwiprofile)
+
+    return redirect('/' + user.username + '/')
+
+
+@login_required
+def follow(request, username):
+    """Follow a user and still stay on his profile"""
+    user = User.objects.get(username=username)
+    request.user.twitwiprofile.follows.add(user.twitwiprofile)
+
+    return redirect('/' + user.username + '/')

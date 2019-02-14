@@ -1,0 +1,18 @@
+{% extends 'twitwiprofile/base.html' %}
+
+
+{% block main %}
+<div>
+    <h1>{{ title }}</h1>
+    <ul>
+        {% if twitwiprofiles.all %}
+            {% for twitwi in twitwiprofiles.all %}
+
+            <li><a href="/{{ twitwi.user.username }}/">@{{ twitwi.user.username }}</a></li>
+            {% endfor %}
+        {% else %}
+            <p>None</p>
+        {% endif %}
+    </ul>
+</div>
+{% endblock %}

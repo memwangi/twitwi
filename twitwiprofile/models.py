@@ -12,5 +12,5 @@ class TwitwiProfile(models.Model):
  Automatically create a profile when a user is created so that
  we don't have to think about creating it ourself
 """
-User.TwitwiProfile = property(
+User.twitwiprofile = property(
     lambda u: TwitwiProfile.objects.get_or_create(user=u)[0])

@@ -6,6 +6,34 @@
   <div class="col-6">
     <h3>@{{ user.username }}</h3>
 
+    <hr>
+    <b> <a href="/{{ user.username }}/follows/">Follows</a></b> {{ user.twitwiprofile.follows.count }}
+    <b> <a href="/{{ user.username }}/followers/">Followers</a></b> {{ user.twitwiprofile.followed_by.count }}
+
+    {% if request.user != user %}
+    <hr>
+
+      {% if request.user.twitwiprofile not in user.twitwiprofile.follows.all %}
+        {% if request.user.twitwiprofile in user.twitwiprofile.followed_by.all %}
+        <!-- If current user is not followed by the user on whose profile he's viewing, he can unfollow him-->
+        <a href="/{{ user.username }}/unfollow/" class="btn btn-danger">Unfollow</a>
+        {% else %}
+        <a href="/{{ user.username }}/follow/" class="btn btn-success">Follow</a>
+        {% endif %}
+
+        <!--Users can still unfollow one another even if they both follow each other-->
+      {% elif request.user.twitwiprofile in user.twitwiprofile.followed_by.all %}
+          {% if request.user.twitwiprofile in user.twitwiprofile.follows.all %}
+            <a href="/{{ user.username }}/unfollow/" class="btn btn-danger">Unfollow</a>
+          {% endif %}          
+        
+      {% else %}
+      <a href="/{{ user.username }}/follow/" class="btn btn-success">Follow Back</a>
+      {% endif %}
+      {% endif %}
+    
+    <hr>
+
     {% if user.twits.all %}
     {% for twit in user.twits.all %}
     <div class="card" style="margin-bottom: 20px;">
@@ -25,32 +53,32 @@
     <h3>Add Twit</h3>
 
     {% if form.errors %}
-      {% for field in form %}
-        {% for error in form.errors %}
-           <div class="alert alert-danger">
-            <b>{{ error|escape }}</b>
-            </div>
-         {% endfor %}
-      {% endfor %}
-      {% for error in form.non_field_errors %}
-        <div class="alert alert-danger">
-          <b>{{ error|escape }}</b>
-         </div>
-      {% endfor %}
+    {% for field in form %}
+    {% for error in form.errors %}
+    <div class="alert alert-danger">
+      <b>{{ error|escape }}</b>
+    </div>
+    {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+    <div class="alert alert-danger">
+      <b>{{ error|escape }}</b>
+    </div>
+    {% endfor %}
     {% endif %}
 
     <form action="/{{ request.user.username }}/" method="POST">
-    {% csrf_token %}
+      {% csrf_token %}
 
-    {% for field in form %}
+      {% for field in form %}
       <div class="form-group">
         {{ field }}
       </div>
-    {% endfor %}
+      {% endfor %}
 
-    <input type="hidden" value="{{ request.path }}" name="redirect">
-    <input type="submit" value="Post Twit" class="btn btn-primary">
-    
+      <input type="hidden" value="{{ request.path }}" name="redirect">
+      <input type="submit" value="Post Twit" class="btn btn-primary">
+
     </form>
   </div>
 </div>

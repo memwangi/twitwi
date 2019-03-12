@@ -1,56 +1,42 @@
 {% extends 'twitwiprofile/base.html' %}
 
 {% block main %}
-<div class="row">
-  <!-- Feed -->
-  <div class="col-6">
-    <h3>@{{ user.username }}</h3>
-
-    <hr>
-    <b> <a href="/{{ user.username }}/follows/">Follows</a></b> {{ user.twitwiprofile.follows.count }}
-    <b> <a href="/{{ user.username }}/followers/">Followers</a></b> {{ user.twitwiprofile.followed_by.count }}
-
-    {% if request.user != user %}
-    <hr>
-
-      {% if request.user.twitwiprofile not in user.twitwiprofile.follows.all %}
-        {% if request.user.twitwiprofile in user.twitwiprofile.followed_by.all %}
-        <!-- If current user is not followed by the user on whose profile he's viewing, he can unfollow him-->
-        <a href="/{{ user.username }}/unfollow/" class="btn btn-danger">Unfollow</a>
-        {% else %}
-        <a href="/{{ user.username }}/follow/" class="btn btn-success">Follow</a>
-        {% endif %}
-
-        <!--Users can still unfollow one another even if they both follow each other-->
-      {% elif request.user.twitwiprofile in user.twitwiprofile.followed_by.all %}
-          {% if request.user.twitwiprofile in user.twitwiprofile.follows.all %}
-            <a href="/{{ user.username }}/unfollow/" class="btn btn-danger">Unfollow</a>
-          {% endif %}          
-        
-      {% else %}
-      <a href="/{{ user.username }}/follow/" class="btn btn-success">Follow Back</a>
-      {% endif %}
-      {% endif %}
+<section id="bio">
+  <div class="row">
     
-    <hr>
+  </div>
+  <div class="row container-fluid mb-2 d-flex justify-content-start ">
+    <!--Bio-->
+    <div class="column-6 col-md-4 d-flex flex-column justify-content-start mx-2">
+      <img src="https://static.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg" class="img-fluid rounded float-left" />
+      <h5 class="d-flex flex-row textmain mx-2">{{ user.first_name.capitalize }} {{ user.last_name.capitalize }}</h5>
 
-    {% if user.twits.all %}
-    {% for twit in user.twits.all %}
-    <div class="card" style="margin-bottom: 20px;">
-      <div class="card-body">
-        <h5 class="card-title">@{{ twit.user.username }}</h5>
-        <p class="card-text"><b>{{ twit.created_at }}</b> - {{ twit.body }}</p>
+
+      <div class="textsub d-flex flex-row">
+        <div class="following d-flex flex-column align-items-center mx-2">
+          <span class="">{{ user.twitwiprofile.follows.count }}</span>
+          <span class=""><b> <a href="/{{ user.username }}/follows/">Follows</a></b></span>
+        </div>
+
+        <div class="followers d-flex flex-column align-items-center mx-2">
+          <span class="d-block">{{ user.twitwiprofile.followed_by.count }}</span>
+          <span class="d-block"><b> <a href="/{{ user.username }}/followers/">Followers</a></b></span>
+        </div>
+
+        <div class="followers d-flex flex-column align-items-center mx-2">
+          <span class="d-block">{{ user.twits.count }}</span>
+          <span class="d-block"><b> <a href="/{{ user.username }}/followers/">Twits</a></b></span>
+        </div>
+
+
       </div>
     </div>
-    {% endfor %}
-    {% else %}
-    <p>No Twits yet!</p>
-    {% endif %}
   </div>
+</section>
 
-  <!-- Sidebar -->
-  <div class="col-6">
-    <h3>Add Twit</h3>
+<div class="row">
+  <!-- Add tweet -->
+  <div class="col-12 col-md-8">
 
     {% if form.errors %}
     {% for field in form %}
@@ -81,6 +67,51 @@
 
     </form>
   </div>
+</div>
+
+<div class="row">
+  <!-- Feed -->
+  <div class="col-12 col-md-8">
+
+    {% if request.user != user %}
+    <hr>
+
+    {% if request.user.twitwiprofile not in user.twitwiprofile.follows.all %}
+    {% if request.user.twitwiprofile in user.twitwiprofile.followed_by.all %}
+    <!-- If current user is not followed by the user on whose profile he's viewing, he can unfollow him-->
+    <a href="/{{ user.username }}/unfollow/" class="btn btn-danger">Unfollow</a>
+    {% else %}
+    <a href="/{{ user.username }}/follow/" class="btn btn-success">Follow</a>
+    {% endif %}
+
+    <!--Users can still unfollow one another even if they both follow each other-->
+    {% elif request.user.twitwiprofile in user.twitwiprofile.followed_by.all %}
+    {% if request.user.twitwiprofile in user.twitwiprofile.follows.all %}
+    <a href="/{{ user.username }}/unfollow/" class="btn btn-danger">Unfollow</a>
+    {% endif %}
+
+    {% else %}
+    <a href="/{{ user.username }}/follow/" class="btn btn-success">Follow Back</a>
+    {% endif %}
+    {% endif %}
+
+    <hr>
+
+    {% if user.twits.all %}
+    {% for twit in user.twits.all %}
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="card-body">
+        <h5 class="card-title">@{{ twit.user.username }}</h5>
+        <p class="card-text"><b>{{ twit.created_at }}</b> - {{ twit.body }}</p>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>No Twits yet!</p>
+    {% endif %}
+  </div>
+
+
 </div>
 
 {% endblock %}

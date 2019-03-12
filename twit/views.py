@@ -1,13 +1,15 @@
 from django.shortcuts import render
 from .models import Twit
+from django.contrib.auth.decorators import login_required
 
 
 def feed(request):
     userids = []
-    for id in request.user.twitwiprofile.follows.all():
-        userids.append(id)
 
-    userids.append(request.user.id)  # To include your own tweets
-    twits = Twit.objects.filter(user_id__in=userids)[0:25]
+    for user in request.user.twitwiprofile.follows.all():
+        userids.append(user.id)
+
+    userids.append(request.user.id)
+    twits = Twit.objects.filter(user_id__in=userids)
 
     return render(request, 'twit/feed.html', {'twits': twits})

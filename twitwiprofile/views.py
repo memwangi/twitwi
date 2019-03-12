@@ -77,7 +77,7 @@ def follows(request, username):
     Get the list of people followed by the current user
     """
     user = User.objects.get(username=username)
-    twitwiprofiles = user.twitwiprofile.follows
+    twitwiprofiles = user.twitwiprofile.follows.select_related('user').all()
 
     return render(request, 'twitwiprofile/users.html', {'title': 'Follows', 'twitwiprofiles': twitwiprofiles})
 
@@ -86,7 +86,7 @@ def followers(request, username):
     """Get a list of people who follow the current user
     """
     user = User.objects.get(username=username)
-    twitwiprofiles = user.twitwiprofile.followed_by
+    twitwiprofiles = user.twitwiprofile.followed_by.select_related('user').all()
 
     return render(request, 'twitwiprofile/users.html', {'title': 'Followers', 'twitwiprofiles': twitwiprofiles})
 
